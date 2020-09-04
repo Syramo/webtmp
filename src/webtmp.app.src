@@ -1,5 +1,5 @@
 {application, webtmp,
- [{description, "An OTP application"},
+ [{description, "Generic web template and cache system"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {webtmp_app, []}},
@@ -10,6 +10,6 @@
   {env,[]},
   {modules, []},
 
-  {licenses, ["Apache 2.0"]},
+  {licenses, ["MIT 1.0"]},
   {links, []}
  ]}.
