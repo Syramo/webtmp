@@ -4,6 +4,8 @@
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2]).
 
 
+-include_lib("kernel/include/file.hrl").
+
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -24,8 +26,12 @@ terminate(_Reason, _State) ->
 %% synchronous calls
 
 handle_call({get_doc,Path,Opt}, _From, State) when is_map(Opt) ->
-	io:format("wt_dds:~nDocument:~p~nOptions:~p~n",[Path,Opt]),
-	{reply, {ok, ""}, State}.
+	Key = maps:get(key,Opt,"***"),
+	Repl = prep_doc(Path, 
+					Key, 
+					wt_cache:doc_state(Path,Key), 
+					maps:get(rebuild,Opt,false)),
+	{reply, Repl, State}.
 	
 
 
@@ -38,3 +44,25 @@ handle_cast(stop, State) ->
 handle_info(_Msg, State) ->
     {noreply, State}.
     
+
+%%%-----------internals---------------------------------------------------------
+
+prep_doc (Path, Key, _, true) ->
+	build_doc(Path, Key);
+	
+prep_doc (Path, Key, {error, na}, _) ->
+	build_doc(Path, Key);
+	
+prep_doc (Path, Key, {stamp, N}, _) when is_integer(N) ->
+	case file:read_file_info(Path,[{time, posix}]) of
+		{error, Reason} -> {error, Reason};
+		{ok, FileInfo} -> 
+			if 
+				FileInfo#file_info.mtime > N -> build_doc(Path, Key);
+				true -> wt_cache:get_doc(Path, Key)
+			end
+	end.
+
+	
+build_doc (_Path, _Key) ->
+	{error, "Not implemented"}.

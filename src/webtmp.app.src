@@ -2,8 +2,8 @@
 	{description, "Generic web template and cache system"},
   	{vsn, "0.1.0"},
   	{licenses, ["MIT 1.0"]},
-  	{modules, [webtmp,wt_dds,wt_cache]},
-  	{registered, [wt_dds,wt_cache]}, 
+  	{modules, [webtmp,wt_dds,wt_cache,wt_parser,wt_events]},
+  	{registered, [wt_dds,wt_cache,wt_events]}, 
   	{applications,[kernel,stdlib,sasl]},
   	{env,[]},
   	{mod, {webtmp, []}}
