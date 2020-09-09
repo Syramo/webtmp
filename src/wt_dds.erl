@@ -53,7 +53,7 @@ prep_doc (Path, Key, _, true) ->
 prep_doc (Path, Key, {error, na}, _) ->
 	build_doc(Path, Key);
 	
-prep_doc (Path, Key, {stamp, N}, _) when is_integer(N) ->
+prep_doc (Path, Key, {mtag, N}, _) when is_integer(N) ->
 	case file:read_file_info(Path,[{time, posix}]) of
 		{error, Reason} -> {error, Reason};
 		{ok, FileInfo} -> 
@@ -64,5 +64,11 @@ prep_doc (Path, Key, {stamp, N}, _) when is_integer(N) ->
 	end.
 
 	
-build_doc (_Path, _Key) ->
-	{error, "Not implemented"}.
+build_doc (Path, Key) ->
+	case wt_parser:parse_file(Path) of
+		{ok, MTag, Cache, Doc} -> 
+			wt_cache:add_doc(Path,Doc,#{key => Key, mtag => MTag, cache => Cache}),
+			{ok, Doc};
+		{error, Reason} ->
+			{error, Reason}
+	end.
