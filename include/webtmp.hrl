@@ -3,3 +3,7 @@
 
 -type doc_options() :: #{key => term(), rebuild => boolean()}.
 
+
+-record (mtag,{path :: string(), mod :: integer(), size :: integer()}).
+
+
