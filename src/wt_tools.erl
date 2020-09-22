@@ -1,6 +1,6 @@
 -module (wt_tools).
 
--export ([get_mtag/1, open_with_mtag/1]).
+-export ([get_mtag/1, open_with_mtag/1, str_to_term/1]).
 
 -include_lib ("webtmp/include/webtmp.hrl").
 -include_lib ("kernel/include/file.hrl").
@@ -41,4 +41,17 @@ open_with_mtag (File) ->
 		{error, R} ->
 			{error, R}
 	end.
+	
+	
+	
+	
+-spec str_to_term (Str :: string()) -> any().
+
+str_to_term (Str) ->
+	{ok, Tokens, _} = erl_scan:string(Str),
+    {ok, Parsed} = erl_parse:parse_exprs(Tokens),
+    {value, Result, _} = erl_eval:exprs(Parsed, [],
+                                        {value, fun (_,_) -> nope end},
+                                        {value, fun (_,_) -> nope end}),
+    Result.
 		

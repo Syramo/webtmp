@@ -65,10 +65,10 @@ prep_doc (Path, Key, {mtag, N}, _) when is_integer(N) ->
 
 	
 build_doc (Path, Key) ->
-	case wt_parser:parse_file(Path,#{}) of
-		{ok, MTags, Cache, Doc} -> 
+	case wt_parser:parse_file(Path) of
+		{ok, MTags, Cache, Vars, Doc} -> 
 			wt_cache:add_doc(Path,Doc,#{key => Key, mtag => MTags, cache => Cache}),
-			{ok, Doc};
+			{ok, Vars, Doc};
 		{error, Reason} ->
 			{error, Reason}
 	end.
